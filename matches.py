@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
-fights = pd.read_csv('ufc_fighter_data.csv')
+fights = pd.read_csv('ufc_fight_stat_data.csv')
 fighters = pd.read_csv('fighter_data.csv')
 
 c = 0
@@ -13,18 +13,30 @@ for index, row in fights.iterrows():
     soup = BeautifulSoup(page.content, 'html.parser')
 
     
-    #finding winner
-    names = soup.find('span', class_='b-fight-details__person')
+    #finding winner and loser
+    names = soup.find_all('div', class_='b-fight-details__person')
     winner = ""
+    loser = ""
+
     for f in names :
+        print(f)
         win_tag = f.find('i', class_='b-fight-details__person-status')
-        if win_tag.get_text() == 'W' :
+
+        if win_tag.get_text(strip=True) == 'W' :
 
             winner_raw = f.find('a', class_="b-fight-details__person-link")
             winner = winner_raw.text.strip()
+
+        elif win_tag.get_text(strip=True) == 'L' :
+            loser_raw = f.find('a', class_="b-fight-details__person-link")
+            loser = loser_raw.text.strip()
         
         elif win_tag.get_text(strip=True) == "NC" :
             winner = "none"
+            print("hit")
+        
+        else : 
+            print("wl error")
 
     #finding method 
     method_final = ""
