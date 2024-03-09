@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 fights = pd.read_csv('ufc_fighter_data.csv')
 fighters = {}
 
-
+c = 0
 for index, row in fights.iterrows():
     url = row['fighter_url']
 
@@ -29,8 +29,20 @@ for index, row in fights.iterrows():
         'name': name,
         'wins': wins,
         'losses': losses
-    } 
-    print(fighters)
+    }
+    c += 1
+    print(c)
+
+final = []
+
+counter = 0
+for name, fighter in fighters.items() :
+    final.append({'name': name, 'wins': fighter['wins'], 'losses': fighter['losses']})
+    counter += 1
+    print(str(counter) + " " + name)
+
+df = pd.DataFrame(final)
+df.to_csv(f'fighter_data.csv', index=False)
 
 
 
