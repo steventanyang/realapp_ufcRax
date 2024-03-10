@@ -4,7 +4,7 @@ import pandas as pd
 st.set_page_config(page_title="historial ufc rax", page_icon="🥊", layout="wide")
 
 st.title("Historical UFC Rax")
-st.write("click on 'more data' for rax calculation")
+st.write("click on 'more data' for rax calculation. Displays top 30 but data exists for 2405 fighters.")
 
 # st.write("made by @yangsl")
 st.write("made by @yangsl")
@@ -12,29 +12,31 @@ st.markdown("""<br><br>""", unsafe_allow_html=True)
 
 df = pd.read_csv("final_values.csv")
 
-# Loop through each row in your DataFrame
-for _, row in df.iterrows():
-    # Create two columns: one for the name, and one for the value
-    col1, col2 = st.columns([2,6])  # Adjust the ratio as needed
+# Search bar
+search_query = st.text_input("Search by fighter name:", "")
+
+num_rows_to_display = st.selectbox("Number of rows to display:", options=[10, 20, 30, 40, 50, 100], index=2)  # Default to 30
+
+if search_query:
+    df_filtered = df[df['name'].str.contains(search_query, case=False)]
+else:
+    df_filtered = df.head(num_rows_to_display)  # Show only the selected number of rows
+
+for _, row in df_filtered.iterrows():
+    col1, col2 = st.columns([2, 6])
 
     with col1:
-        # Display fighter's name
         st.markdown(f"## {row['name']}")
     
     with col2:
-        # Display fighter's value in bigger, green text using HTML in markdown
         st.markdown(f"<h2 style='color: #90ee90;'>{row['Value']}</h2>", unsafe_allow_html=True)
     
-    # Create an expander for more data
     with st.expander("More Data"):
-        # Prepare the data for the bar chart, excluding 'name' and 'Value' columns
         data_for_chart = row.drop(labels=['name', 'Value'])
         
-        # Convert the Series to a DataFrame and use its index as a column, necessary for bar_chart
         chart_data = pd.DataFrame(data_for_chart)
         chart_data = chart_data.rename(columns={row.name: 'Value'}).reset_index()
-        # Rename columns for clarity in the chart
+
         chart_data.columns = ['Category', 'Value']
         
-        # Display the bar chart
         st.bar_chart(chart_data.set_index('Category'))
