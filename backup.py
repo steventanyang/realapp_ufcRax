@@ -9,16 +9,16 @@ result = {}
 error = []
 id = 0
 
+for index, row in fights.iterrows():
 
-
-def job(index, row):
     url = row['fight_url']
     if id == row['fight_id'] : 
         print(row['fight_id'])
-        return
+        continue
     id = row['fight_id']
 
     print(url)
+    
     try :
         page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -55,7 +55,6 @@ def job(index, row):
 
         # print(striker)
         # print(strike_diff)
-
 
         # rounds
         rounds = ""
@@ -225,16 +224,6 @@ def job(index, row):
     except : 
         print("error")
         error.append(url)
-        
-    # print(result[winner])
-    # print(result[loser])
-
-iterables = []
-for index, row in fights.iterrows():
-    iterables.append((index,row))
-
-executor = ThreadPoolExecutor(max_workers=10)
-executor.map(job,iterables)
 
 final_list = []
 for f , v in result.items() :
