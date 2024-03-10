@@ -17,6 +17,18 @@ fighter_names_strike = parent_strike.find_all('a', class_="b-link_style_black")
 top = fighter_names_strike[0].get_text(strip=True)
 bottom = fighter_names_strike[1].get_text(strip=True)
 
+strike_num = parent_strike.find_all('td', class_="b-fight-details__table-col")
+# print(strike_num[2])
+
+top_strikes = strike_num[2].find_all('p', class_="b-fight-details__table-text")[0].get_text(strip=True)
+bottom_strikes = strike_num[2].find_all('p', class_="b-fight-details__table-text")[1].get_text(strip=True)
+
+top_s_final = top_strikes.split(" ")[0]
+bottom_s_final = top_strikes.split(" ")[0]
+
+strike_diff = int(top_s_final) - int(bottom_s_final)
+
+
 
 #rounds
 
