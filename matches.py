@@ -9,14 +9,12 @@ result = {}
 error = []
 id = 0
 
+fights = fights.drop_duplicates(subset='fight_id', keep='first')
 
 
-def job(index, row):
+def job(row_data):
+    index, row = row_data
     url = row['fight_url']
-    if id == row['fight_id'] : 
-        print(row['fight_id'])
-        return
-    id = row['fight_id']
 
     print(url)
     try :
@@ -229,12 +227,9 @@ def job(index, row):
     # print(result[winner])
     # print(result[loser])
 
-iterables = []
-for index, row in fights.iterrows():
-    iterables.append((index,row))
+with ThreadPoolExecutor(max_workers=5) as executor:
+    executor.map(job, fights.iterrows())
 
-executor = ThreadPoolExecutor(max_workers=10)
-executor.map(job,iterables)
 
 final_list = []
 for f , v in result.items() :
