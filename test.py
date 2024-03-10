@@ -107,6 +107,19 @@ else:
 result = {}
 # KO/TKO , Submission , Decision - Unanimous , Decision - Majority , Decision - Split , No Contest 
 
+result["Rafael Fiziev"] = {        
+        "name": loser,
+        "KO/TKO": 0,
+        "Submission": 0,
+        "Unanimous Decision": 0,
+        "Majority Decision": 0,
+        "Split Decision": 0,
+        "No Contest": 0,
+        "Losses": 0,
+        "StrikeBonus": 0,
+        "5roundBonus": 0
+    }
+
 if winner == "none" :
     winner = top
     loser = bottom
@@ -130,7 +143,7 @@ if winner in result :
 
     if winner == striker :
         result[winner]["StrikeBonus"] += strike_diff
-
+    print("yes")
 
 else :
     result[winner] = {
@@ -178,6 +191,7 @@ if loser in result :
 
     if m == "No Contest" :
         result[loser]["No Contest"] += 50
+    print("yes")
 
 else :
     result[loser] = {
