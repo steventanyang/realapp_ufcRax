@@ -55,6 +55,14 @@ for index, row in fights.iterrows():
 
     #finding rounds
     rounds = ""
+    parent_round = soup.find('p', class_="b-fight-details__text")
+    round_i_tags = parent_round.find_all('i', class_="b-fight-details__text-item")
+    for i in round_i_tags :
+        if i.find('i', class_="b-fight-details__label").get_text(strip=True) == "Time format:" :
+            rounds = i.get_text(strip=True)
+
+    rounds_split = rounds.split(':')[1]
+    rounds_final = rounds_split[:1]
 
     #strike diff
     sig_strik_diff = ""
