@@ -19,7 +19,6 @@ for index, row in fights.iterrows():
     loser = ""
 
     for f in names :
-        print(f)
         win_tag = f.find('i', class_='b-fight-details__person-status')
 
         if win_tag.get_text(strip=True) == 'W' :
@@ -64,8 +63,33 @@ for index, row in fights.iterrows():
     rounds_split = rounds.split(':')[1]
     rounds_final = rounds_split[:1]
 
-    #strike diff
-    sig_strik_diff = ""
+    # strikes
+    strike_diff = 0
+    parent_strike = soup.find('tbody', class_="b-fight-details__table-body")
+    fighter_names_strike = parent_strike.find_all('a', class_="b-link_style_black")
+
+    top = fighter_names_strike[0].get_text(strip=True)
+    bottom = fighter_names_strike[1].get_text(strip=True)
+
+    strike_num = parent_strike.find_all('td', class_="b-fight-details__table-col")
+    # print(strike_num[2])
+
+    top_strikes = strike_num[2].find_all('p', class_="b-fight-details__table-text")[0].get_text(strip=True)
+    bottom_strikes = strike_num[2].find_all('p', class_="b-fight-details__table-text")[1].get_text(strip=True)
+
+    top_s_final = top_strikes.split(" ")[0]
+    bottom_s_final = bottom_strikes.split(" ")[0]
+
+    strike_diff = abs(int(top_s_final) - int(bottom_s_final))
+
+
+    if top_s_final > bottom_s_final :
+        striker = top
+    else :
+        striker = bottom
+
+    print(striker)
+    print(strike_diff)
         
 
         
