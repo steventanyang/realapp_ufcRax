@@ -15,7 +15,7 @@ df = pd.read_csv("final_values.csv")
 # Loop through each row in your DataFrame
 for _, row in df.iterrows():
     # Create two columns: one for the name, and one for the value
-    col1, col2 = st.columns([2,4])  # Adjust the ratio as needed
+    col1, col2 = st.columns([2,6])  # Adjust the ratio as needed
 
     with col1:
         # Display fighter's name
