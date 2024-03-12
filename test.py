@@ -17,22 +17,6 @@ num_rows_to_display = st.selectbox("Number of rows to display:", options=[10, 20
 
 st.markdown("""<br><br>""", unsafe_allow_html=True)
 
-reset_button = st.button("Reset All Multipliers")
-
-def reset_multipliers():
-    for key in st.session_state.keys():
-        if key.startswith("multiplier_"):
-            st.session_state[key] = 1.2
-        if key.startswith("value_"):
-            fighter_name = key.replace("value_", "").replace("_", " ")
-            original_value = df.loc[df['name'] == fighter_name, 'Value'].values[0]
-            st.session_state[key] = round(original_value * 1.2)
-
-if reset_button:
-    reset_multipliers()
-
-st.markdown("""<br><br>""", unsafe_allow_html=True)
-
 if search_query:
     df_filtered = df[df['name'].str.contains(search_query, case=False)]
 else:
@@ -50,7 +34,6 @@ multiplier_colors = {
 }
 
 for _, row in df_filtered.iterrows():
-
     value_key = f"value_{row['name'].replace(' ', '_')}"
     multiplier_key = f"multiplier_{row['name'].replace(' ', '_')}"
 
@@ -59,7 +42,7 @@ for _, row in df_filtered.iterrows():
     
     if multiplier_key not in st.session_state:
         st.session_state[multiplier_key] = 1.2
-    
+
     col1, col2, *button_cols = st.columns([2, 1] + [0.6 for _ in multipliers])
 
     with col1:
@@ -69,10 +52,8 @@ for _, row in df_filtered.iterrows():
         color = multiplier_colors[st.session_state[multiplier_key]]
         value_placeholder = st.markdown(f"<h2 style='color: {color};'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
 
-   # Here we add a loop over the button columns to add spacing
     for i, multiplier in enumerate(multipliers):
         with button_cols[i]:
-            
             st.markdown(f"<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
             if st.button(f'{multiplier}x', key=f'{multiplier}_{row.name}'):
                 new_value = round(row['Value'] * multiplier)
@@ -81,10 +62,7 @@ for _, row in df_filtered.iterrows():
                 color = multiplier_colors[multiplier]
                 value_placeholder.markdown(f"<h2 style='color: {color};'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
 
-
     with st.expander("More Data"):
         data_for_chart = row.drop(labels=['name', 'Value'])
         chart_data = pd.DataFrame(data_for_chart)
         chart_data = chart_data.rename(columns={row.name: 'Value'}).reset_index()
-        chart_data.columns = ['Category', 'Value']
-        st.bar_chart(chart_data.set_index('Category'))
