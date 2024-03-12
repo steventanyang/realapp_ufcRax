@@ -24,26 +24,43 @@ else:
 
 multipliers = [1.2, 1.4, 1.6, 2.0, 2.5]
 
+multiplier_colors = {
+    1.2: '#FFD700', 
+    1.4: '#C0C0C0', 
+    1.6: '#CD7F32',  
+    2.0: '#FF4500',  
+    2.5: '#008000',  
+}
+
 for _, row in df_filtered.iterrows():
 
     value_key = f"value_{row['name'].replace(' ', '_')}"
-    
+    color_key = f"color_{row['name'].replace(' ', '_')}"
 
     if value_key not in st.session_state:
-        st.session_state[value_key] = row['Value']
+        st.session_state[value_key] = round(row['Value'] * 1.2)  # Default to 1.2x the 'Value'
+
+    if color_key not in st.session_state:
+        st.session_state[color_key] = multiplier_colors[1.2]  # Color corresponding to 1.2x
+
     
-    col1, col2, *button_cols = st.columns([2, 1] + [0.6 for _ in multipliers])
+    full_row, col1, col2, *button_cols = st.columns([0.1, 2, 1] + [0.6 for _ in multipliers])
 
     with col1:
         st.markdown(f"## {row['name']}")
 
     with col2:
-        value_placeholder = st.markdown(f"<h2 style='color: #90ee90;'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
+        # Use the color from session state
+        value_placeholder = st.markdown(f"<h2 style='color: {st.session_state[color_key]};'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
 
     for i, multiplier in enumerate(multipliers):
-        if button_cols[i].button(f'{multiplier}x', key=f'{multiplier}_{row.name}'):
-            st.session_state[value_key] = row['Value'] * multiplier
-            value_placeholder.markdown(f"<h2 style='color: #90ee90;'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
+        with button_cols[i]:
+            if st.button(f'{multiplier}x', key=f'{multiplier}_{row.name}'):
+                new_value = round(row['Value'] * multiplier)
+                st.session_state[value_key] = new_value
+                # Update the color in the session state based on the multiplier clicked
+                st.session_state[color_key] = multiplier_colors[multiplier]
+                value_placeholder.markdown(f"<h2 style='color: {st.session_state[color_key]};'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
 
     with st.expander("More Data"):
         data_for_chart = row.drop(labels=['name', 'Value'])
