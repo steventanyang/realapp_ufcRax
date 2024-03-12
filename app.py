@@ -22,14 +22,23 @@ if search_query:
 else:
     df_filtered = df.head(num_rows_to_display)
 
-multipliers = [1.2, 1.4, 1.6, 2.0, 2.5]
+multipliers = [1.2, 1.4, 1.6, 2.0, 2.5, 4.0, 6.0]
+multiplier_colors = {
+    1.2: '#6591B2',  # common
+    1.4: '#689F6D',  # uncommon
+    1.6: '#BA8057',  # rare
+    2.0: '#AE5353',  # epic
+    2.5: '#7258A9',  # legendary
+    4.0: '#B9985A',  # mystic
+    6.0: '#AB6FB0',  # iconic
+}
 
 for _, row in df_filtered.iterrows():
 
     value_key = f"value_{row['name'].replace(' ', '_')}"
 
     if value_key not in st.session_state:
-        st.session_state[value_key] = row['Value']
+        st.session_state[value_key] = round(row['Value'] * 1.2)
     
     col1, col2, *button_cols = st.columns([2, 1] + [0.6 for _ in multipliers])
 
@@ -37,7 +46,7 @@ for _, row in df_filtered.iterrows():
         st.markdown(f"## {row['name']}")
 
     with col2:
-        value_placeholder = st.markdown(f"<h2 style='color: #90ee90;'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
+        value_placeholder = st.markdown(f"<h2 style='color: #6591B2;'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
 
    # Here we add a loop over the button columns to add spacing
     for i, multiplier in enumerate(multipliers):
@@ -45,12 +54,11 @@ for _, row in df_filtered.iterrows():
             # Adjust the margin-top style as needed to align with the other columns
             st.markdown(f"<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
             if st.button(f'{multiplier}x', key=f'{multiplier}_{row.name}'):
-                # Calculate the new value and round it to the nearest whole number
                 new_value = round(row['Value'] * multiplier)
                 st.session_state[value_key] = new_value
-
-                # Update the value display
-                value_placeholder.markdown(f"<h2 style='color: #90ee90;'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
+                color = multiplier_colors[multiplier]
+                # Update the value placeholder with the new value and color
+                value_placeholder.markdown(f"<h2 style='color: {color};'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
 
 
     with st.expander("More Data"):
