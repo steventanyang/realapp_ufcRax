@@ -4,11 +4,11 @@ import pandas as pd
 st.set_page_config(page_title="Historical UFC Rax", page_icon="🥊", layout="wide", initial_sidebar_state="collapsed")
 
 st.title("Historical UFC Rax")
-st.write("Click on 'more data' for RAX calculation. Displays top 30 but data exists for 2405 fighters.")
+st.write("Click on 'more data' for RAX calculation.")
 st.write("Made by @yangsl")
 st.markdown("""<br><br>""", unsafe_allow_html=True)
 
-df = pd.read_csv("final_values.csv")
+df = pd.read_csv("test.csv")
 
 # Search bar
 search_query = st.text_input("Search by fighter name:", "")
@@ -48,16 +48,18 @@ multiplier_colors = {
     4.0: '#B9985A',  # mystic
     6.0: '#AB6FB0',  # iconic
 }
+multiplier_names = {
+    1.2: 'Common',  # common
+    1.4: 'Uncommon',  # uncommon
+    1.6: 'Rare',  # rare
+    2.0: 'Epic',  # epic
+    2.5: 'Legendary',  # legendary
+    4.0: 'Mystic',  # mystic
+    6.0: 'Iconic',  # iconic
+}
 
-def load_data(search_query, num_rows_to_display):
-    df = pd.read_csv("final_values.csv")
-    if search_query:
-        df_filtered = df[df['name'].str.contains(search_query, case=False)]
-    else:
-        df_filtered = df.head(num_rows_to_display)
-    return df_filtered
+for _, row in df_filtered.iterrows():
 
-def render_row(row):
     value_key = f"value_{row['name'].replace(' ', '_')}"
     multiplier_key = f"multiplier_{row['name'].replace(' ', '_')}"
 
@@ -76,15 +78,19 @@ def render_row(row):
         color = multiplier_colors[st.session_state[multiplier_key]]
         value_placeholder = st.markdown(f"<h2 style='color: {color};'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
 
+   # Here we add a loop over the button columns to add spacing
     for i, multiplier in enumerate(multipliers):
         with button_cols[i]:
+            
             st.markdown(f"<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
             if st.button(f'{multiplier}x', key=f'{multiplier}_{row.name}'):
-                new_value = round(row['Value'] * multiplier)
+                # new_value = round(row['Value'] * multiplier)
+                new_value = round(row[multiplier_names[multiplier]])
                 st.session_state[value_key] = new_value
                 st.session_state[multiplier_key] = multiplier
                 color = multiplier_colors[multiplier]
                 value_placeholder.markdown(f"<h2 style='color: {color};'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
+
 
     with st.expander("More Data"):
         data_for_chart = row.drop(labels=['name', 'Value'])
@@ -92,8 +98,3 @@ def render_row(row):
         chart_data = chart_data.rename(columns={row.name: 'Value'}).reset_index()
         chart_data.columns = ['Category', 'Value']
         st.bar_chart(chart_data.set_index('Category'))
-
-df_filtered = load_data(search_query, num_rows_to_display)
-
-for _, row in df_filtered.iterrows():
-    render_row(row)
