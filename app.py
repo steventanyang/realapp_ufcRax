@@ -3,6 +3,13 @@ import pandas as pd
 
 st.set_page_config(page_title="Historical UFC Rax", page_icon="🥊", layout="wide", initial_sidebar_state="collapsed")
 
+hide_decoration_bar_style = '''
+    <style>
+        header {visibility: hidden;}
+    </style>
+'''
+st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
+
 st.title("Historical UFC Rax")
 st.write("Click on 'more data' for RAX calculation. Displays top 30 but data exists for 2405 fighters.")
 st.write("Made by @yangsl")
@@ -33,6 +40,7 @@ if reset_button:
 
 st.markdown("""<br><br>""", unsafe_allow_html=True)
 
+
 if search_query:
     df_filtered = df[df['name'].str.contains(search_query, case=False)]
 else:
@@ -48,6 +56,7 @@ multiplier_colors = {
     4.0: '#B9985A',  # mystic
     6.0: '#AB6FB0',  # iconic
 }
+
 
 def load_data(search_query, num_rows_to_display):
     df = pd.read_csv("final_values.csv")
