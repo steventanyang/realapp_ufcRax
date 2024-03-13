@@ -8,7 +8,7 @@ st.write("Click on 'more data' for RAX calculation. Displays top 30 but data exi
 st.write("Made by @yangsl")
 st.markdown("""<br><br>""", unsafe_allow_html=True)
 
-df = pd.read_csv("test.csv")
+df = pd.read_csv("final_values.csv")
 
 # Search bar
 search_query = st.text_input("Search by fighter name:", "")
@@ -48,15 +48,6 @@ multiplier_colors = {
     4.0: '#B9985A',  # mystic
     6.0: '#AB6FB0',  # iconic
 }
-multiplier_names = {
-    1.2: 'Common',  # common
-    1.4: 'Uncommon',  # uncommon
-    1.6: 'Rare',  # rare
-    2.0: 'Epic',  # epic
-    2.5: 'Legendary',  # legendary
-    4.0: 'Mystic',  # mystic
-    6.0: 'Iconic',  # iconic
-}
 
 for _, row in df_filtered.iterrows():
 
@@ -84,8 +75,7 @@ for _, row in df_filtered.iterrows():
             
             st.markdown(f"<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
             if st.button(f'{multiplier}x', key=f'{multiplier}_{row.name}'):
-                # new_value = round(row['Value'] * multiplier)
-                new_value = round(row[multiplier_names[multiplier]])
+                new_value = round(row['Value'] * multiplier)
                 st.session_state[value_key] = new_value
                 st.session_state[multiplier_key] = multiplier
                 color = multiplier_colors[multiplier]
