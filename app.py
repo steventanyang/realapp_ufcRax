@@ -11,11 +11,11 @@ hide_decoration_bar_style = '''
 st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 
 st.title("Historical UFC Rax")
-st.write("Click on 'more data' for RAX calculation. Displays top 30 but data exists for 2405 fighters.")
+st.write("Click on 'more data' for RAX calculation. Data on 2400+ fighters.")
 st.write("Made by @yangsl")
 st.markdown("""<br><br>""", unsafe_allow_html=True)
 
-df = pd.read_csv("final_values.csv")
+df = pd.read_csv("final_with_ids.csv")
 
 
 left_column, right_column = st.columns([2, 2])
@@ -69,7 +69,7 @@ multiplier_colors = {
 
 
 def load_data(search_query, num_rows_to_display):
-    df = pd.read_csv("final_values.csv")
+    df = pd.read_csv("final_with_ids.csv")
     if search_query:
         df_filtered = df[df['name'].str.contains(search_query, case=False)]
     else:
@@ -77,7 +77,7 @@ def load_data(search_query, num_rows_to_display):
     return df_filtered
 
 def load_search_data(search_query, num_rows_to_display):
-    df = pd.read_csv("final_values.csv")
+    df = pd.read_csv("final_with_ids.csv")
     if search_query:
         df_filtered = df[df['name'].str.contains(search_query, case=False)]
     else :
@@ -115,7 +115,7 @@ def render_row(row, column_id):
                 value_placeholder.markdown(f"<h2 style='color: {color};'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
 
     with st.expander("More Data"):
-        data_for_chart = row.drop(labels=['name', 'Value'])
+        data_for_chart = row.drop(labels=['name', 'Value', 'FighterId'])
         chart_data = pd.DataFrame(data_for_chart)
         chart_data = chart_data.rename(columns={row.name: 'Value'}).reset_index()
         chart_data.columns = ['Category', 'Value']
@@ -161,7 +161,7 @@ def render_row_compare(row, column_id):
         st.bar_chart(chart_data.set_index('Category'))
 
 def load_all_fighter_names():
-    df = pd.read_csv("final_values.csv")
+    df = pd.read_csv("final_with_ids.csv")
     return df['name']
 
 fighter_names = load_all_fighter_names()
