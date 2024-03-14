@@ -162,7 +162,7 @@ def render_row_compare(row, column_id):
 
 def load_all_fighter_names():
     df = pd.read_csv("final_values.csv")
-    return df['name'].sort_values().unique()
+    return df['name']
 
 fighter_names = load_all_fighter_names()
 
@@ -176,7 +176,7 @@ elif mode == "Compare Fighters" :
     left_column, right_column = st.columns([2, 2])
 
     with left_column:
-        fighter1 = st.selectbox("Select Fighter 1", options=fighter_names, index=11, format_func=lambda x: x if x else "Type to search...")
+        fighter1 = st.selectbox("Select Fighter 1", options=fighter_names, index=1, format_func=lambda x: x if x else "Type to search...")
 
         if not fighter1 == "" :
             df_filtered = load_search_data(fighter1, num_rows_to_display)
@@ -185,7 +185,7 @@ elif mode == "Compare Fighters" :
 
     
     with right_column:
-        fighter2 = st.selectbox("Select Fighter 2", options=fighter_names, index=10, format_func=lambda x: x if x else "Type to search...")
+        fighter2 = st.selectbox("Select Fighter 2", options=fighter_names, index=2, format_func=lambda x: x if x else "Type to search...")
 
         if not fighter2 == "" :
             df_filtered = load_search_data(fighter2, num_rows_to_display)
