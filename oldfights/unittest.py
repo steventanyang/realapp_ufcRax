@@ -27,9 +27,10 @@ def job(row_data):
 
         for link in links :
             exists = link in fights['fight_url'].values
-            if not exists :
-                print("*NEW" + link)
-                result.append(link)
+            # if not exists :
+            #     print("*NEW" + link)
+            #     result.append(link)
+            result.append(link)
 
         print("__________")
 
@@ -49,9 +50,9 @@ for item in result :
 
 new_urls_df = pd.DataFrame(result, columns=['fight_url'])
 
-updated_df = fights._append(new_urls_df, ignore_index=True)
+# updated_df = fights._append(new_urls_df, ignore_index=True)
 
-updated_df.to_csv('all_fights.csv', index=False)
+new_urls_df.to_csv('all_fights.csv', index=False)
 
 
 

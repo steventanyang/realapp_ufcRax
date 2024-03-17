@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
 
 # fights = pd.read_csv('ufc_fight_stat_data.csv')
-fights = pd.read_csv('all_fights.csv')
+fights = pd.read_csv('oldfights/all_fights.csv')
 fighters = pd.read_csv('fighter_data.csv')
 result = {}
 lerror = []
@@ -90,9 +90,9 @@ def job(row_data):
                 loser_raw = f.find('a', class_="b-fight-details__person-link")
                 loser = loser_raw.text.strip()
 
-            elif win_tag.get_text(strip=True) == 'D' :
+            # elif win_tag.get_text(strip=True) == 'D' :
 
-                winner = "draw"
+            #     winner = "draw"
             
             elif win_tag.get_text(strip=True) == "NC" :
 
@@ -129,6 +129,9 @@ def job(row_data):
         if winner == "none" or "draw":
             winner = top
             loser = bottom
+
+        print("winner: " + winner)
+        print("loser: " + loser)
 
         if winner in result :
             if m == "KO/TKO" :
@@ -234,7 +237,7 @@ def job(row_data):
     # print(result[winner])
     # print(result[loser])
 
-with ThreadPoolExecutor(max_workers=10) as executor:
+with ThreadPoolExecutor(max_workers=1) as executor:
     executor.map(job, fights.iterrows())
 
 
