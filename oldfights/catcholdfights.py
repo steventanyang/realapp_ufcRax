@@ -5,8 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 fights = pd.read_csv('sorted_fights.csv') # csv of fight urls
-# fighters = pd.read_csv('../ufc_fighter_data.csv') # csv of all fighters
-fighters = pd.read_csv('test.csv') # csv of all fighters
+fighters = pd.read_csv('../ufc_fighter_data.csv') # csv of all fighters
+# fighters = pd.read_csv('test.csv') # csv of all fighters
 
 result = []
 

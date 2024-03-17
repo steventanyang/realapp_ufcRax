@@ -23,35 +23,38 @@ def job(row_data):
         page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
 
-        # strikes
-        strike_diff = 0
-        parent_strike = soup.find('tbody', class_="b-fight-details__table-body")
-        fighter_names_strike = parent_strike.find_all('a', class_="b-link_style_black")
+        try :
+            # strikes
+            strike_diff = 0
+            parent_strike = soup.find('tbody', class_="b-fight-details__table-body")
+            fighter_names_strike = parent_strike.find_all('a', class_="b-link_style_black")
 
-        top = fighter_names_strike[0].get_text(strip=True)
-        bottom = fighter_names_strike[1].get_text(strip=True)
+            top = fighter_names_strike[0].get_text(strip=True)
+            bottom = fighter_names_strike[1].get_text(strip=True)
 
-        # print(top)
-        # print(bottom)
+            # print(top)
+            # print(bottom)
 
-        strike_num = parent_strike.find_all('td', class_="b-fight-details__table-col")
-        # print(strike_num[2])
+            strike_num = parent_strike.find_all('td', class_="b-fight-details__table-col")
+            # print(strike_num[2])
 
-        top_strikes = strike_num[2].find_all('p', class_="b-fight-details__table-text")[0].get_text(strip=True)
-        bottom_strikes = strike_num[2].find_all('p', class_="b-fight-details__table-text")[1].get_text(strip=True)
+            top_strikes = strike_num[2].find_all('p', class_="b-fight-details__table-text")[0].get_text(strip=True)
+            bottom_strikes = strike_num[2].find_all('p', class_="b-fight-details__table-text")[1].get_text(strip=True)
 
-        top_s_final = top_strikes.split(" ")[0]
-        bottom_s_final = bottom_strikes.split(" ")[0]
+            top_s_final = top_strikes.split(" ")[0]
+            bottom_s_final = bottom_strikes.split(" ")[0]
 
-        # print("top final: " + top_s_final)
-        # print("bottom final: " + bottom_s_final)
+            # print("top final: " + top_s_final)
+            # print("bottom final: " + bottom_s_final)
 
-        strike_diff = abs(int(top_s_final) - int(bottom_s_final))
+            strike_diff = abs(int(top_s_final) - int(bottom_s_final))
 
-        if int(top_s_final) > int(bottom_s_final) :
-            striker = top
-        else :
-            striker = bottom
+            if int(top_s_final) > int(bottom_s_final) :
+                striker = top
+            else :
+                striker = bottom
+        except :
+            striker = "none"
 
         # print(striker)
         # print(strike_diff)
@@ -77,6 +80,9 @@ def job(row_data):
         names = soup.find_all('div', class_='b-fight-details__person')
         winner = ""
         loser = ""
+        draw = False
+        nocontest = False
+
 
         for f in names :
             win_tag = f.find('i', class_='b-fight-details__person-status')
@@ -85,18 +91,20 @@ def job(row_data):
 
                 winner_raw = f.find('a', class_="b-fight-details__person-link")
                 winner = winner_raw.text.strip()
+                # print("W" + winner)
 
             elif win_tag.get_text(strip=True) == 'L' :
                 loser_raw = f.find('a', class_="b-fight-details__person-link")
                 loser = loser_raw.text.strip()
+                # print("L" + loser)
 
-            # elif win_tag.get_text(strip=True) == 'D' :
+            elif win_tag.get_text(strip=True) == 'D' :
 
-            #     winner = "draw"
+                draw = True
             
             elif win_tag.get_text(strip=True) == "NC" :
 
-                winner = "none"
+                nocontest = True
             
             else : 
                 print("wl error")
@@ -109,7 +117,7 @@ def job(row_data):
         if len(method) > 1:
             m = method[1].get_text(strip=True)
             # print(m)
-            if winner == "none":
+            if nocontest == True:
                 m = "No Contest"
         else:
             m = "Second method tag not found"
@@ -126,113 +134,205 @@ def job(row_data):
 
         # KO/TKO , Submission , Decision - Unanimous , Decision - Majority , Decision - Split , No Contest 
 
-        if winner == "none" or "draw":
+        if nocontest == True :
+            # print("OOPS" + " " + winner)
             winner = top
             loser = bottom
 
         print("winner: " + winner)
         print("loser: " + loser)
 
-        if winner in result :
-            if m == "KO/TKO" :
-                result[winner]["KO/TKO"] += 100
-            elif m == "Submission" :
-                result[winner]["Submission"] += 90
-            elif m == "Decision - Unanimous" :
-                result[winner]["Unanimous Decision"] += 80
-            elif m == "Decision - Majority" :
-                result[winner]["Majority Decision"] += 75
-            elif m == "Decision - Split" :
-                result[winner]["Split Decision"] += 70
-            elif m == "No Contest" :
-                result[winner]["No Contest"] += 50
 
-            if final == '5':
-                result[winner]["5roundBonus"] += 25
+        if draw == False :
+            if winner in result :
+                if m == "KO/TKO" :
+                    result[winner]["KO/TKO"] += 100
+                elif m == "Submission" :
+                    result[winner]["Submission"] += 90
+                elif m == "Decision - Unanimous" :
+                    result[winner]["Unanimous Decision"] += 80
+                elif m == "Decision - Majority" :
+                    result[winner]["Majority Decision"] += 75
+                elif m == "Decision - Split" :
+                    result[winner]["Split Decision"] += 70
+                elif m == "No Contest" :
+                    result[winner]["No Contest"] += 50
 
-            if winner == striker :
-                result[winner]["StrikeBonus"] += strike_diff
-            print(result[winner])
+                if final == '5':
+                    result[winner]["5roundBonus"] += 25
 
-        else :
-            result[winner] = {
-                "name": winner,
-                "KO/TKO": 0,
-                "Submission": 0,
-                "Unanimous Decision": 0,
-                "Majority Decision": 0,
-                "Split Decision": 0,
-                "No Contest": 0,
-                "Losses": 0,
-                "StrikeBonus": 0,
-                "5roundBonus": 0
-            }
+                if winner == striker :
+                    result[winner]["StrikeBonus"] += strike_diff
+                print(result[winner])
 
-            if m == "KO/TKO":
-                result[winner]["KO/TKO"] += 100
-            elif m == "Submission":
-                result[winner]["Submission"] += 90
-            elif m == "Decision - Unanimous":
-                result[winner]["Unanimous Decision"] += 80
-            elif m == "Decision - Majority":
-                result[winner]["Majority Decision"] += 75
-            elif m == "Decision - Split":
-                result[winner]["Split Decision"] += 70
-            elif m == "No Contest":
-                result[winner]["No Contest"] += 50
+            else :
+                result[winner] = {
+                    "name": winner,
+                    "KO/TKO": 0,
+                    "Submission": 0,
+                    "Unanimous Decision": 0,
+                    "Majority Decision": 0,
+                    "Split Decision": 0,
+                    "No Contest": 0,
+                    "Losses": 0,
+                    "StrikeBonus": 0,
+                    "5roundBonus": 0
+                }
 
-            if final == '5':
-                result[winner]["5roundBonus"] += 25
+                if m == "KO/TKO":
+                    result[winner]["KO/TKO"] += 100
+                elif m == "Submission":
+                    result[winner]["Submission"] += 90
+                elif m == "Decision - Unanimous":
+                    result[winner]["Unanimous Decision"] += 80
+                elif m == "Decision - Majority":
+                    result[winner]["Majority Decision"] += 75
+                elif m == "Decision - Split":
+                    result[winner]["Split Decision"] += 70
+                elif m == "No Contest":
+                    result[winner]["No Contest"] += 50
 
-            if winner == striker :
-                result[winner]["StrikeBonus"] += strike_diff
-            print("new")
+                if final == '5':
+                    result[winner]["5roundBonus"] += 25
+
+                if winner == striker :
+                    result[winner]["StrikeBonus"] += strike_diff
+                print("new")
 
 
-        if loser in result :
-            result[loser]["Losses"] += 25
-
-            if final == '5':
-                result[loser]["5roundBonus"] += 25
-
-            if loser == striker :
-                result[loser]["StrikeBonus"] += strike_diff
-
-            if m == "No Contest" :
-                result[loser]["No Contest"] += 50
-
-            print(result[loser])
-
-        else :
-            result[loser] = {
-                "name": loser,
-                "KO/TKO": 0,
-                "Submission": 0,
-                "Unanimous Decision": 0,
-                "Majority Decision": 0,
-                "Split Decision": 0,
-                "No Contest": 0,
-                "Losses": 0,
-                "StrikeBonus": 0,
-                "5roundBonus": 0
-            }
-
-            if m != "No Contest" :
+            if loser in result :
                 result[loser]["Losses"] += 25
 
-            if final == '5':
-                result[loser]["5roundBonus"] += 25
+                if final == '5':
+                    result[loser]["5roundBonus"] += 25
 
-            if loser == striker :
-                result[loser]["StrikeBonus"] += strike_diff
+                if loser == striker :
+                    result[loser]["StrikeBonus"] += strike_diff
 
-            if m == "No Contest" :
-                result[loser]["No Contest"] += 50
-            print("new")
+                if m == "No Contest" :
+                    result[loser]["No Contest"] += 50
+
+                print(result[loser])
+
+            else :
+                result[loser] = {
+                    "name": loser,
+                    "KO/TKO": 0,
+                    "Submission": 0,
+                    "Unanimous Decision": 0,
+                    "Majority Decision": 0,
+                    "Split Decision": 0,
+                    "No Contest": 0,
+                    "Losses": 0,
+                    "StrikeBonus": 0,
+                    "5roundBonus": 0
+                }
+
+                if m != "No Contest" :
+                    result[loser]["Losses"] += 25
+
+                if final == '5':
+                    result[loser]["5roundBonus"] += 25
+
+                if loser == striker :
+                    result[loser]["StrikeBonus"] += strike_diff
+
+                if m == "No Contest" :
+                    result[loser]["No Contest"] += 50
+                print("new")
+
+        else : #handle draw case
+            if top in result :
+
+                if m == "Decision - Unanimous" :
+                    result[top]["Unanimous Decision"] += 80
+                elif m == "Decision - Majority" :
+                    result[top]["Majority Decision"] += 75
+                elif m == "Decision - Split" :
+                    result[top]["Split Decision"] += 70
+
+                if final == '5':
+                    result[top]["5roundBonus"] += 25
+
+                if top == striker :
+                    result[top]["StrikeBonus"] += strike_diff
+                print(result[top])
+
+            else :
+                result[top] = {
+                    "name": top,
+                    "KO/TKO": 0,
+                    "Submission": 0,
+                    "Unanimous Decision": 0,
+                    "Majority Decision": 0,
+                    "Split Decision": 0,
+                    "No Contest": 0,
+                    "Losses": 0,
+                    "StrikeBonus": 0,
+                    "5roundBonus": 0
+                }
+
+                if m == "Decision - Unanimous":
+                    result[top]["Unanimous Decision"] += 80
+                elif m == "Decision - Majority":
+                    result[top]["Majority Decision"] += 75
+                elif m == "Decision - Split":
+                    result[top]["Split Decision"] += 70
+
+                if final == '5':
+                    result[top]["5roundBonus"] += 25
+
+                if top == striker :
+                    result[top]["StrikeBonus"] += strike_diff
+                print("new")
+
+            if bottom in result :
+
+                if m == "Decision - Unanimous" :
+                    result[bottom]["Unanimous Decision"] += 80
+                elif m == "Decision - Majority" :
+                    result[bottom]["Majority Decision"] += 75
+                elif m == "Decision - Split" :
+                    result[bottom]["Split Decision"] += 70
+
+                if final == '5':
+                    result[bottom]["5roundBonus"] += 25
+
+                if bottom == striker :
+                    result[bottom]["StrikeBonus"] += strike_diff
+                print(result[bottom])
+
+            else :
+                result[bottom] = {
+                    "name": bottom,
+                    "KO/TKO": 0,
+                    "Submission": 0,
+                    "Unanimous Decision": 0,
+                    "Majority Decision": 0,
+                    "Split Decision": 0,
+                    "No Contest": 0,
+                    "Losses": 0,
+                    "StrikeBonus": 0,
+                    "5roundBonus": 0
+                }
+
+                if m == "Decision - Unanimous":
+                    result[bottom]["Unanimous Decision"] += 80
+                elif m == "Decision - Majority":
+                    result[bottom]["Majority Decision"] += 75
+                elif m == "Decision - Split":
+                    result[bottom]["Split Decision"] += 70
+
+                if final == '5':
+                    result[bottom]["5roundBonus"] += 25
+
+                if bottom == striker :
+                    result[bottom]["StrikeBonus"] += strike_diff
+                print("new")
 
     except : 
         print("error")
-        error.append(url)
+        lerror.append(url)
         
     # print(result[winner])
     # print(result[loser])
