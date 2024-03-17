@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 fighters = pd.read_csv('../fighter_data.csv')
 
-fights = pd.read_csv('test.csv')
+fights = pd.read_csv('checkrecord.csv')
 
 for _, fighter in fights.iterrows() :
     

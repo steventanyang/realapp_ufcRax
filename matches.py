@@ -3,13 +3,15 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
 
-fights = pd.read_csv('ufc_fight_stat_data.csv')
+# fights = pd.read_csv('ufc_fight_stat_data.csv')
+fights = pd.read_csv('test.csv')
 fighters = pd.read_csv('fighter_data.csv')
 result = {}
-error = []
+lerror = []
+wlerror = []
 id = 0
 
-fights = fights.drop_duplicates(subset='fight_id', keep='first')
+# fights = fights.drop_duplicates(subset='fight_id', keep='first')
 
 
 def job(row_data):
@@ -94,6 +96,7 @@ def job(row_data):
             
             else : 
                 print("wl error")
+                wlerror.append(url)
 
         #method
         method_parent = soup.find('i', class_="b-fight-details__text-item_first")
@@ -227,7 +230,7 @@ def job(row_data):
     # print(result[winner])
     # print(result[loser])
 
-with ThreadPoolExecutor(max_workers=5) as executor:
+with ThreadPoolExecutor(max_workers=10) as executor:
     executor.map(job, fights.iterrows())
 
 
@@ -248,4 +251,20 @@ for f , v in result.items() :
     })
 
 df = pd.DataFrame(final_list)
-df.to_csv(f'final.csv', index=False)
+df.to_csv(f'new_final.csv', index=False)
+
+
+
+#errors
+
+print("WL ERROR: " + str(len(wlerror)))
+for error in wlerror :
+    print(error)
+
+print("________________")
+print("________________")
+print("________________")
+
+print("ERROR: " + str(len(lerror)))
+for error in lerror :
+    print(error)
