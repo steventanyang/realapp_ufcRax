@@ -156,7 +156,7 @@ def job(row_data):
                 elif m == "Decision - Split" :
                     result[winner]["Split Decision"] += 70
                 elif m == "No Contest" :
-                    result[winner]["No Contest"] += 50
+                    result[winner]["No Contest"] += 10
 
                 if final == '5':
                     result[winner]["5roundBonus"] += 25
@@ -190,7 +190,7 @@ def job(row_data):
                 elif m == "Decision - Split":
                     result[winner]["Split Decision"] += 70
                 elif m == "No Contest":
-                    result[winner]["No Contest"] += 50
+                    result[winner]["No Contest"] += 10
 
                 if final == '5':
                     result[winner]["5roundBonus"] += 25
@@ -201,7 +201,8 @@ def job(row_data):
 
 
             if loser in result :
-                result[loser]["Losses"] += 25
+                if m != "No Contest" :
+                    result[loser]["Losses"] += 10
 
                 if final == '5':
                     result[loser]["5roundBonus"] += 25
@@ -210,7 +211,7 @@ def job(row_data):
                     result[loser]["StrikeBonus"] += strike_diff
 
                 if m == "No Contest" :
-                    result[loser]["No Contest"] += 50
+                    result[loser]["No Contest"] += 10
 
                 print(result[loser])
 
@@ -229,7 +230,7 @@ def job(row_data):
                 }
 
                 if m != "No Contest" :
-                    result[loser]["Losses"] += 25
+                    result[loser]["Losses"] += 10
 
                 if final == '5':
                     result[loser]["5roundBonus"] += 25
@@ -238,7 +239,7 @@ def job(row_data):
                     result[loser]["StrikeBonus"] += strike_diff
 
                 if m == "No Contest" :
-                    result[loser]["No Contest"] += 50
+                    result[loser]["No Contest"] += 10
                 print("new")
 
         else : #handle draw case
@@ -337,7 +338,7 @@ def job(row_data):
     # print(result[winner])
     # print(result[loser])
 
-with ThreadPoolExecutor(max_workers=1) as executor:
+with ThreadPoolExecutor(max_workers=5) as executor:
     executor.map(job, fights.iterrows())
 
 

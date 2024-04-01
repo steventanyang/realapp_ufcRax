@@ -55,3 +55,5 @@ updated_df.to_csv('all_fights.csv', index=False)
 
 
 
+
+

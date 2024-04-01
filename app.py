@@ -116,7 +116,7 @@ def render_row(row, column_id):
                 value_placeholder.markdown(f"<h2 style='color: {color};'>{st.session_state[value_key]}</h2>", unsafe_allow_html=True)
 
     with st.expander("More Data"):
-        data_for_chart = row.drop(labels=['name', 'Value', 'FighterId'])
+        data_for_chart = row.drop(labels=['name', 'Value'])
         chart_data = pd.DataFrame(data_for_chart)
         chart_data = chart_data.rename(columns={row.name: 'Value'}).reset_index()
         chart_data.columns = ['Category', 'Value']
